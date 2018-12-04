@@ -55,3 +55,7 @@ git config --global user.name "Jyotiraditya"
 git config --global credential.helper cache
 git config --global credential.helper 'cache --timeout=9999999'
 
+# TG notify
+export TG=~/BuildScripts/telegram.conf
+
+echo -e "Done. Now Start Building \nAdded SDK,CCache\nInstalled all required packages.\nAdded all git credentials\nTimezone is of Kolkata" | telegram-send --config $TG --format html --stdin
