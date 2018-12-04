@@ -43,8 +43,12 @@ Lunched target
 Deleted old logs and creating new
 name : <code>log-$BUILDDATE-$BUILDTIME.txt</code>
 "
-time mka $MAKETARGET -j$(nproc --all) > ./$LOGFILE
-
+time mka $MAKETARGET -j$(nproc --all) > ./$LOGFILE &
+while test ! -z "$(pidof soong_ui)"; do
+        sleep 120
+        PERCENTAGE=$(cat $LOGFILE | tail -n 1 | awk '{ print $2 }')
+        telegram-send --config $TG --format html "Current percentage: <code>$PERCENTAGE</code>";
+done
 EXITCODE=$?
 if [ $EXITCODE -eq 0 ];
 then
