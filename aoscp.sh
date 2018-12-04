@@ -12,6 +12,10 @@ export GDRIVE=/usr/bin/gdrive
 # Switch to source directory
 cd ~/CypherOS
 
+# Log
+rm -rf log*.txt
+export LOGFILE=log-$BUILDDATE-$BUILDTIME.txt
+
 # Configs Needed
 export TARGET=aoscp_santoni-userdebug
 export AOSCP_VERSION=7.0.0
@@ -24,24 +28,31 @@ export BUILDTIME=$(date +%H%M)
 
 # Repo sync
 repo sync -f --force-sync --no-tags --no-clone-bundle -c
+
 # envsetup
 source build/envsetup.sh
+
 # lunch
 lunch $TARGET
+
 # Build
 telegram-send --config $TG --format html "
 Repo syncing Done with <code>repo sync -f --force-sync --no-tags --no-clone-bundle -c</code>
 Established Build Enviroment...
 Lunched target
+Deleted old logs and creating new
+name : <code>log-$BUILDDATE-$BUILDTIME.txt</code>
 "
-time mka $MAKETARGET -j$(nproc --all) | tee build.log
+time mka $MAKETARGET -j$(nproc --all) > ./$LOGFILE
 
 EXITCODE=$?
 if [ $EXITCODE -eq 0 ];
 then
-	telegram-send --config $TG --format html " Build finished successfully"
+	telegram-send --config $TG --format html " Build finished successfully";
 else
-	telegram-send --config $TG --format html " Build Failed"
+	telegram-send --config $TG --format html " Build Failed";
+	telegram-send --config $TG --file $LOGFILE;
+	exit 1;
 fi
 
 # Move zip to ROMs Folder
@@ -57,4 +68,5 @@ MD5=$(cat /tmp/gdrive-info-$BUILDDATE-$BUILDTIME | grep 'Md5sum' | awk '{ print 
 NAME=$(cat /tmp/gdrive-info-$BUILDDATE-$BUILDTIME | grep 'Name' | awk '{ print $2 }')
 SIZE=$(cat /tmp/gdrive-info-$BUILDDATE-$BUILDTIME | grep 'Size' | awk '{ print $2 }')
 DLURL=$(cat /tmp/gdrive-info-$BUILDDATE-$BUILDTIME | grep 'DownloadUrl' | awk '{ print $2 }')
-echo -e "\nID: <code>$FILEID</code>\nPackage name: <code>$NAME</code>\nSize: <code>$SIZE</code>MB\nmd5sum: <code>$MD5</code>\nDownload link: $DLURL" | telegram-send --config $ROL --format html --stdin
+echo -e "\nID: <code>$FILEID</code>\nPackage name: <code>$NAME</code>\nSize: <code>$SIZE</code>MB\nmd5sum: <code>$MD5</code>\nDownload link: $DLURL" | telegram-send --config $TG --format html --stdin
+telegram-send --config $TG --file $LOGFILE
