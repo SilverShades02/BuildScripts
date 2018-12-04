@@ -45,7 +45,7 @@ name : <code>log-$BUILDDATE-$BUILDTIME.txt</code>
 "
 time mka $MAKETARGET -j$(nproc --all) > ./$LOGFILE &
 while test ! -z "$(pidof soong_ui)"; do
-        sleep 120
+        sleep 300
         PERCENTAGE=$(cat $LOGFILE | tail -n 1 | awk '{ print $2 }')
         telegram-send --config $TG --format html "Current percentage: <code>$PERCENTAGE</code>";
 done
