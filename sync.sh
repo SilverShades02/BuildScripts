@@ -1,9 +1,8 @@
 #Fetching latest list
-curl -s https://wiki.codeaurora.org/xwiki/bin/QAEP/release | grep '<table>' > releases
+curl -s https://source.android.com/setup/start/build-numbers.html#source-code-tags-and-builds | grep '<table>' > releases
 
 #Convert to MD
 pandoc +RTS -K1073741824 -RTS releases -f html -t markdown_github+pipe_tables -o releases.md
-`cat releases.md | grep 'msm8953_64'
 sed -i 's/  */ /g' ./releases.md
 mv releases.md README.md
 
@@ -20,7 +19,6 @@ cat changes | while read line; do
 	tag=$(echo $line | cut -d '|' -f3)
 	chipset=$(echo $line | cut -d '|' -f4)
 	manifest=$(echo $line | cut -d '|' -f5)
-	android=$(echo $line | cut -d '|' -f6)
 	python telegram.py -t $bottoken -c @CAF89xxTracker -M "New CAF release detected!
 	Chipset:*$chipset*
 	Android:*$android*
