@@ -21,7 +21,7 @@ cat changes | while read line; do
 	android=$(echo $line | cut -d '|' -f6)
 	KEK=$(echo "$tag" | tail -c 7)
 	if [ "$KEK" = "89xx.0" ]; then
-		python telegram.py -t $bottoken -c @CAFReleases -M "New CAF release detected!
+		python telegram.py -t $bottoken -c https://t.me/CAF89xxReleases -M "New CAF release detected!
 		Chipset:*$chipset*
 		Android:*$android* 
 		Tag:*$tag*
